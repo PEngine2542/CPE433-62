@@ -85,6 +85,7 @@ namespace DNWS
         protected Program _parent;
         protected Dictionary<string, PluginInfo> plugins;
 
+
         /// <summary>
         /// Constructor, set the client socket and parent ref, also init stat hash
         /// </summary>
@@ -107,6 +108,7 @@ namespace DNWS
                 plugins[section["Path"]] = pi;
             }
         }
+
 
         /// <summary>
         /// Get a file from local harddisk based on path
@@ -152,7 +154,7 @@ namespace DNWS
         /// <summary>
         /// Get a request from client, process it, then return response to client
         /// </summary>
-        public void Process()
+        public void Process(object state)
         {
             NetworkStream ns = new NetworkStream(_client);
             string requestStr = "";
@@ -170,7 +172,7 @@ namespace DNWS
 
             request = new HTTPRequest(requestStr);
             request.addProperty("RemoteEndPoint", _client.RemoteEndPoint.ToString());
-
+          
             // We can handle only GET now
             if(request.Status != 200) {
                 response = new HTTPResponse(request.Status);
@@ -220,6 +222,11 @@ namespace DNWS
             _client.Shutdown(SocketShutdown.Both);
             //_client.Close();
 
+        }
+
+        internal void Process()
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -296,7 +303,8 @@ namespace DNWS
                     // Get one, show some info
                     _parent.Log("Client accepted:" + clientSocket.RemoteEndPoint.ToString());
                     HTTPProcessor hp = new HTTPProcessor(clientSocket, _parent);
-                    hp.Process();
+                     ThreadPool.QueueUserWorkItem(hp.Process);
+
                 }
                 catch (Exception ex)
                 {
