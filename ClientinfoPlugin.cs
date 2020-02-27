@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
+using System.Threading;
 
 namespace DNWS
 {
@@ -27,7 +29,11 @@ namespace DNWS
       sb.Append("Client Port: ").Append(ip[1]).Append("<br><br>");
       sb.Append("Browser Information: ").Append(request.getPropertyByKey("User-Agent")).Append("<br><br>");
       sb.Append("Accept Language: ").Append(request.getPropertyByKey("Accept-Language")).Append("<br><br>");
-      sb.Append("Accept Encoding: ").Append(request.getPropertyByKey("Accept-Encoding")).Append("<br><br>");
+      sb.Append("Accept-Encoding: " + request.getPropertyByKey("Accept-Encoding") + "</br></br>");
+      sb.Append("Thread ID: " + Thread.CurrentThread.ManagedThreadId + "</br></br>");
+      sb.Append("Thread status: " + Thread.CurrentThread.ThreadState);
+      sb.Append("Amount of thread: " + Process.GetCurrentProcess().Threads.Count); 
+
       sb.Append("</body></html>");
       response = new HTTPResponse(200);
       response.body = Encoding.UTF8.GetBytes(sb.ToString());
